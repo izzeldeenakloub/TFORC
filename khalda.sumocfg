@@ -9,7 +9,11 @@
         <net-file value="khalda.net.xml"/>
         <route-files value="routes.rou.xml"/>
         <additional-files value="khalda.add.xml"/>
+        
     </input>
+    <output>
+        <lane-area-detector-output value="" />
+    </output>
     <time>
         <begin value="0"/>
         <end value="3600"/>
