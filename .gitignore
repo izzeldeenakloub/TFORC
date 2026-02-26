@@ -1,0 +1,7 @@
+# Ignore all old lane area detector files
+e2_*.xml
+
+# Ignore the detectors folder if SUMO writes files there
+detectors/
+
+venv/
