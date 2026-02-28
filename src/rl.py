@@ -33,7 +33,7 @@ import traci
 # EDIT THESE FOR YOUR PROJECT
 # ----------------------------
 SUMO_BINARY = "sumo-gui"         # or "sumo" (faster)
-SUMO_CONFIG = "khalda.sumocfg"   # your .sumocfg path
+SUMO_CONFIG = "../network_files/khalda.sumocfg"   # your .sumocfg path
 TLS_ID = "Node2"                # your traffic light id
 STEP_LENGTH = 0.1               # must match SUMO command
 MAX_SIM_TIME = None             # seconds; set None to stop when no vehicles
