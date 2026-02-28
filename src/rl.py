@@ -33,7 +33,7 @@ import traci
 # EDIT THESE FOR YOUR PROJECT
 # ----------------------------
 SUMO_BINARY = "sumo-gui"         # or "sumo" (faster)
-SUMO_CONFIG = "../network_files/khalda.sumocfg"   # your .sumocfg path
+SUMO_CONFIG = "../network/khalda.sumocfg"   # your .sumocfg path
 TLS_ID = "Node2"                # your traffic light id
 STEP_LENGTH = 0.1               # must match SUMO command
 MAX_SIM_TIME = None             # seconds; set None to stop when no vehicles
@@ -43,14 +43,14 @@ STATIC_PHASE_TIME = 90.0        # seconds per phase (green)
 
 # Q-Learning hyperparams
 ALPHA = 0.1
-GAMMA = 0.9
+GAMMA = 0.95
 EPSILON = 0.15                  # exploration
 MIN_GREEN = 5.0                 # seconds minimum before changing phase
 
 # Actor-Critic hyperparams
-ACTOR_LR = 0.05                 # policy learning rate
-CRITIC_LR = 0.1                 # value learning rate
-AC_TEMPERATURE = 1.0            # softmax temperature (lower => more greedy)
+ACTOR_LR = 0.01                 # policy learning rate
+CRITIC_LR = 0.05                 # value learning rate
+AC_TEMPERATURE = 0.5            # softmax temperature (lower => more greedy)
 AC_EPSILON = 0.05               # optional exploration (keeps it from getting stuck)
 
 # Output files (in case matplotlib isn't installed)
@@ -186,15 +186,15 @@ def detect_main_green_phases():
 
     return main, phase_scores
 
-def print_phase_debug(main_phases, phase_scores):
-    prog = traci.trafficlight.getAllProgramLogics(TLS_ID)[0]
-    print("\n=== TLS Phase Debug ===")
-    print("TLS_ID:", TLS_ID)
-    print("Total phases:", len(prog.phases))
-    print("Detected main phases:", main_phases)
-    for i, ph in enumerate(prog.phases):
-        print(f"Phase {i:2d}  dur={ph.duration:>5}  greens={phase_scores[i]}  state={ph.state}")
-    print("=== End Debug ===\n")
+# def print_phase_debug(main_phases, phase_scores):
+#     prog = traci.trafficlight.getAllProgramLogics(TLS_ID)[0]
+#     print("\n=== TLS Phase Debug ===")
+#     print("TLS_ID:", TLS_ID)
+#     print("Total phases:", len(prog.phases))
+#     print("Detected main phases:", main_phases)
+#     for i, ph in enumerate(prog.phases):
+#         print(f"Phase {i:2d}  dur={ph.duration:>5}  greens={phase_scores[i]}  state={ph.state}")
+#     print("=== End Debug ===\n")
 
 # ----------------------------
 # Run 1: Static controller
@@ -243,7 +243,7 @@ def run_ql(main_phase_order):
     start_sumo()
 
     main_map, phase_scores = detect_main_green_phases()
-    print_phase_debug(main_map, phase_scores)
+    # print_phase_debug(main_map, phase_scores)
 
     actions = [main_map[a] for a in main_phase_order]
     n_actions = len(actions)
@@ -312,7 +312,7 @@ def run_actor_critic(main_phase_order):
     start_sumo()
 
     main_map, phase_scores = detect_main_green_phases()
-    print_phase_debug(main_map, phase_scores)
+    # print_phase_debug(main_map, phase_scores)
 
     actions = [main_map[a] for a in main_phase_order]
     n_actions = len(actions)
@@ -450,25 +450,33 @@ def plot_results(t_static, q_static, d_static, t_ql, q_ql, d_ql, t_ac, q_ac, d_a
 def main():
     MAIN_ORDER = ["W", "E", "N", "S"]
 
-    print("=== Run 1/3: Static 90s per detected main phase ===")
-    t_s, q_s, d_s = run_static(MAIN_ORDER)
-    save_csv(OUT_STATIC_CSV, t_s, q_s, d_s)
-
-    print("=== Run 2/3: Q-Learning using detected main phases ===")
-    t_q, q_q, d_q = run_ql(MAIN_ORDER)
-    save_csv(OUT_QL_CSV, t_q, q_q, d_q)
-
-    print("=== Run 3/3: Actor-Critic using detected main phases ===")
+    print("=== Running Actor-Critic only ===")
     t_a, q_a, d_a = run_actor_critic(MAIN_ORDER)
     save_csv(OUT_AC_CSV, t_a, q_a, d_a)
 
     print("\n--- Summary ---")
-    print(f"Static final delay proxy:      {d_s[-1]:.2f}")
-    print(f"Q-Learning final delay proxy:  {d_q[-1]:.2f}")
-    print(f"Actor-Critic final delay proxy:{d_a[-1]:.2f}")
-    print(f"CSV saved: {OUT_STATIC_CSV}, {OUT_QL_CSV}, {OUT_AC_CSV}")
+    print(f"Actor-Critic final delay proxy: {d_a[-1]:.2f}")
+    print(f"CSV saved: {OUT_AC_CSV}")
 
-    plot_results(t_s, q_s, d_s, t_q, q_q, d_q, t_a, q_a, d_a)
+    if HAS_PLOT:
+        import matplotlib.pyplot as plt
+        plt.figure()
+        plt.plot(t_a, q_a, label="Actor-Critic")
+        plt.xlabel("Simulation time (s)")
+        plt.ylabel("Total queue (vehicles)")
+        plt.title("Actor-Critic Queue vs Time")
+        plt.legend()
+        plt.grid(True)
+
+        plt.figure()
+        plt.plot(t_a, d_a, label="Actor-Critic")
+        plt.xlabel("Simulation time (s)")
+        plt.ylabel("Cumulative queue-area (veh·s)")
+        plt.title("Actor-Critic Delay Proxy vs Time")
+        plt.legend()
+        plt.grid(True)
+
+        plt.show()
 
 if __name__ == "__main__":
     main()
