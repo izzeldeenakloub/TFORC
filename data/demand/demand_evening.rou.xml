@@ -1,25 +1,35 @@
 <routes>
   <vType id="normalDriver" vClass="passenger" accel="2.6" decel="4.5" sigma="0.5" length="5" maxSpeed="13.9"/>
-  <vType id="crazyDriver"  vClass="passenger" accel="2.6" decel="6.0" sigma="1.0" length="5" maxSpeed="13.9"/>
+  <vType id="crazyDriver" vClass="passenger" accel="2.6" decel="6.0" sigma="1.0" length="5" maxSpeed="13.9"/>
 
-  <flow id="evening_1" type="normalDriver" begin="18000" end="25200" vehsPerHour="80" from="southFeed2" to="Sink3" via="S_in" departLane="best" departSpeed="max"/>
-  <flow id="evening_2" type="normalDriver" begin="18000" end="25200" vehsPerHour="80" from="westFeed2" to="Sink4" via="W_in" departLane="best" departSpeed="max"/>
-  <flow id="evening_3" type="normalDriver" begin="18000" end="25200" vehsPerHour="80" from="northFeed2" to="Sink3" via="N_in" departLane="best" departSpeed="max"/>
-  <flow id="evening_4" type="normalDriver" begin="18000" end="25200" vehsPerHour="80" from="eastFeed1" to="Sink3" via="E_in" departLane="best" departSpeed="max"/>
-  <flow id="evening_5" type="normalDriver" begin="18000" end="25200" vehsPerHour="80" from="eastFeed1" to="Sink1" via="E_in" departLane="best" departSpeed="max"/>
-  <flow id="evening_6" type="normalDriver" begin="18000" end="25200" vehsPerHour="80" from="eastFeed1" to="Sink4" via="E_in" departLane="best" departSpeed="max"/>
-  <flow id="evening_7" type="normalDriver" begin="18000" end="25200" vehsPerHour="80" from="northFeed2" to="Sink2" via="N_in" departLane="best" departSpeed="max"/>
-  <flow id="evening_8" type="normalDriver" begin="18000" end="25200" vehsPerHour="80" from="northFeed2" to="Sink2" via="N_in" departLane="best" departSpeed="max"/>
-  <flow id="evening_9" type="normalDriver" begin="18000" end="25200" vehsPerHour="80" from="westFeed1" to="Sink4" via="W_in" departLane="best" departSpeed="max"/>
-  <flow id="evening_10" type="normalDriver" begin="18000" end="25200" vehsPerHour="80" from="westFeed1" to="Sink2" via="W_in" departLane="best" departSpeed="max"/>
-  <flow id="evening_11" type="normalDriver" begin="18000" end="25200" vehsPerHour="80" from="eastFeed1" to="Sink1" via="E_in" departLane="best" departSpeed="max"/>
-  <flow id="evening_12" type="normalDriver" begin="18000" end="25200" vehsPerHour="80" from="southFeed1" to="Sink4" via="S_in" departLane="best" departSpeed="max"/>
-  <flow id="evening_13" type="normalDriver" begin="18000" end="25200" vehsPerHour="80" from="southFeed1" to="Sink2" via="S_in" departLane="best" departSpeed="max"/>
-  <flow id="evening_14" type="normalDriver" begin="18000" end="25200" vehsPerHour="80" from="southFeed3" to="Sink4" via="S_in" departLane="best" departSpeed="max"/>
-  <flow id="evening_15" type="normalDriver" begin="18000" end="25200" vehsPerHour="80" from="northFeed2" to="Sink4" via="N_in" departLane="best" departSpeed="max"/>
-  <flow id="evening_16" type="normalDriver" begin="18000" end="25200" vehsPerHour="80" from="southFeed3" to="Sink1" via="S_in" departLane="best" departSpeed="max"/>
-  <flow id="evening_17" type="normalDriver" begin="18000" end="25200" vehsPerHour="80" from="northFeed1" to="Sink4" via="N_in" departLane="best" departSpeed="max"/>
-  <flow id="evening_18" type="normalDriver" begin="18000" end="25200" vehsPerHour="80" from="northFeed2" to="Sink3" via="N_in" departLane="best" departSpeed="max"/>
-  <flow id="evening_19" type="normalDriver" begin="18000" end="25200" vehsPerHour="80" from="eastFeed1" to="Sink1" via="E_in" departLane="best" departSpeed="max"/>
-  <flow id="evening_20" type="normalDriver" begin="18000" end="25200" vehsPerHour="80" from="southFeed3" to="Sink3" via="S_in" departLane="best" departSpeed="max"/>
+  <flow id="evening_1" type="normalDriver" begin="18000" end="25200" vehsPerHour="110" from="westFeed1" to="sink1" via="W_in" departLane="best" departSpeed="max"/>
+  <flow id="evening_2" type="normalDriver" begin="18000" end="25200" vehsPerHour="110" from="eastFeed3" to="sink2" via="E_in" departLane="best" departSpeed="max"/>
+  <flow id="evening_3" type="normalDriver" begin="18000" end="25200" vehsPerHour="110" from="southFeed2" to="sink2" via="S_in" departLane="best" departSpeed="max"/>
+  <flow id="evening_4" type="normalDriver" begin="18000" end="25200" vehsPerHour="110" from="northFeed2" to="sink2" via="N_in" departLane="best" departSpeed="max"/>
+  <flow id="evening_5" type="normalDriver" begin="18000" end="25200" vehsPerHour="110" from="northFeed2" to="sink1" via="N_in" departLane="best" departSpeed="max"/>
+  <flow id="evening_6" type="normalDriver" begin="18000" end="25200" vehsPerHour="110" from="eastFeed2" to="sink2" via="E_in" departLane="best" departSpeed="max"/>
+  <flow id="evening_7" type="normalDriver" begin="18000" end="25200" vehsPerHour="110" from="westFeed4" to="sink2" via="W_in" departLane="best" departSpeed="max"/>
+  <flow id="evening_8" type="normalDriver" begin="18000" end="25200" vehsPerHour="110" from="eastFeed3" to="sink2" via="E_in" departLane="best" departSpeed="max"/>
+  <flow id="evening_9" type="normalDriver" begin="18000" end="25200" vehsPerHour="110" from="westFeed4" to="sink2" via="W_in" departLane="best" departSpeed="max"/>
+  <flow id="evening_10" type="normalDriver" begin="18000" end="25200" vehsPerHour="110" from="southFeed2" to="sink2" via="S_in" departLane="best" departSpeed="max"/>
+  <flow id="evening_11" type="normalDriver" begin="18000" end="25200" vehsPerHour="110" from="eastFeed1" to="sink1" via="E_in" departLane="best" departSpeed="max"/>
+  <flow id="evening_12" type="normalDriver" begin="18000" end="25200" vehsPerHour="110" from="southFeed2" to="sink1" via="S_in" departLane="best" departSpeed="max"/>
+  <flow id="evening_13" type="normalDriver" begin="18000" end="25200" vehsPerHour="110" from="eastFeed3" to="sink2" via="E_in" departLane="best" departSpeed="max"/>
+  <flow id="evening_14" type="normalDriver" begin="18000" end="25200" vehsPerHour="110" from="northFeed2" to="sink1" via="N_in" departLane="best" departSpeed="max"/>
+  <flow id="evening_15" type="normalDriver" begin="18000" end="25200" vehsPerHour="110" from="eastFeed2" to="sink1" via="E_in" departLane="best" departSpeed="max"/>
+  <flow id="evening_16" type="normalDriver" begin="18000" end="25200" vehsPerHour="110" from="AB_W_feed_3" to="sink1" via="AB_W_in" departLane="best" departSpeed="max"/>
+  <flow id="evening_17" type="normalDriver" begin="18000" end="25200" vehsPerHour="110" from="AB_E_feed_3" to="sink2" via="AB_E_in" departLane="best" departSpeed="max"/>
+  <flow id="evening_18" type="normalDriver" begin="18000" end="25200" vehsPerHour="110" from="AB_W_feed_1" to="sink2" via="AB_W_in" departLane="best" departSpeed="max"/>
+  <flow id="evening_19" type="normalDriver" begin="18000" end="25200" vehsPerHour="110" from="AB_E_feed_1" to="sink1" via="AB_E_in" departLane="best" departSpeed="max"/>
+  <flow id="evening_20" type="normalDriver" begin="18000" end="25200" vehsPerHour="110" from="AB_E_feed_1" to="sink1" via="AB_E_in" departLane="best" departSpeed="max"/>
+  <flow id="evening_21" type="normalDriver" begin="18000" end="25200" vehsPerHour="110" from="AB_S_feed_1" to="sink2" via="AB_S_in" departLane="best" departSpeed="max"/>
+  <flow id="evening_22" type="normalDriver" begin="18000" end="25200" vehsPerHour="110" from="AB_E_feed_3" to="sink2" via="AB_E_in" departLane="best" departSpeed="max"/>
+  <flow id="evening_23" type="normalDriver" begin="18000" end="25200" vehsPerHour="110" from="AB_W_feed_2" to="sink1" via="AB_W_in" departLane="best" departSpeed="max"/>
+  <flow id="evening_24" type="normalDriver" begin="18000" end="25200" vehsPerHour="110" from="AB_E_feed_3" to="sink2" via="AB_E_in" departLane="best" departSpeed="max"/>
+  <flow id="evening_25" type="normalDriver" begin="18000" end="25200" vehsPerHour="110" from="AB_W_feed_3" to="sink1" via="AB_W_in" departLane="best" departSpeed="max"/>
+  <flow id="evening_26" type="normalDriver" begin="18000" end="25200" vehsPerHour="110" from="AB_W_feed_2" to="sink1" via="AB_W_in" departLane="best" departSpeed="max"/>
+  <flow id="evening_27" type="normalDriver" begin="18000" end="25200" vehsPerHour="110" from="AB_S_feed_1" to="sink1" via="AB_S_in" departLane="best" departSpeed="max"/>
+  <flow id="evening_28" type="normalDriver" begin="18000" end="25200" vehsPerHour="110" from="AB_S_feed_1" to="sink2" via="AB_S_in" departLane="best" departSpeed="max"/>
+  <flow id="evening_29" type="normalDriver" begin="18000" end="25200" vehsPerHour="110" from="AB_W_feed_2" to="sink2" via="AB_W_in" departLane="best" departSpeed="max"/>
+  <flow id="evening_30" type="normalDriver" begin="18000" end="25200" vehsPerHour="110" from="AB_W_feed_1" to="sink2" via="AB_W_in" departLane="best" departSpeed="max"/>
 </routes>

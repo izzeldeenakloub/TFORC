@@ -5,3 +5,7 @@ e2_*.xml
 detectors/
 
 venv/
+
+
+
+*.pkl

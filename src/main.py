@@ -1,10 +1,9 @@
 import os
 import sys
-import random
+import numpy as np
+import matplotlib.pyplot as plt
+import pickle
 
-# -------------------------
-# SUMO / TraCI setup
-# -------------------------
 if "SUMO_HOME" not in os.environ:
     sys.exit("Please set SUMO_HOME")
 
@@ -13,43 +12,36 @@ sys.path.append(tools)
 
 import traci
 
-SUMO_BINARY = "sumo-gui"   # or "sumo"
-SUMO_CONFIG = "khalda.sumocfg"
+# ---------------------------
+# CONFIG
+# ---------------------------
+SUMO_BINARY = "sumo"
+SUMO_CONFIG = "../network/khalda.sumocfg"
+STEP_LENGTH = 1.0
 
-SUMO_CMD = [
-    SUMO_BINARY,
-    "-c", SUMO_CONFIG,
-    "--step-length", "0.1",
-    "--start"
-]
+TLS_MAIN = "Node2"
+TLS_AB   = "Node_AB"
 
-# -------------------------
-# Crazy behavior setup
-# -------------------------
-VEH_BEHAVIOR = {}
-BEHAVIORS = ["slowdown", "stop_near_junction", "lane_change"]
+STATIC_PHASE_TIME = 90.0
+MIN_GREEN = 20.0
 
-BEHAVIOR_COLORS = {
-    "slowdown":           (0, 0, 255, 255),   # blue
-    "stop_near_junction": (255, 0, 0, 255),   # red
-    "lane_change":        (0, 255, 0, 255),   # green
-}
+# AC params
+ACTOR_LR = 0.01
+CRITIC_LR = 0.05
+GAMMA = 0.9
+AC_TEMPERATURE = 1.0
+AC_EPSILON = 0.05
 
-STUCK_STEPS = {}
-STOP_SPEED_EPS = 0.2
-STUCK_MIN_STEPS = 15
-LEADER_LOOKAHEAD = 30
-BLOCK_GAP_MAX = 10
+MODEL_PATH = "ac_model_separated.pkl"
+OUT_DIR = "exp_separated"
 
-# -------------------------
-# Detector setup
-# -------------------------
-APPROACHES = ["W", "E", "N", "S"]
-
+# ---------------------------
+# DETECTORS (ASSAF)
+# ---------------------------
 def det_id(app, lane, seg):
     return f"{app}_L{lane}_S{seg}"
 
-def arm_sum(app):
+def arm_main(app):
     total = 0
 
     if app == "W":
@@ -72,7 +64,6 @@ def arm_sum(app):
                 if det_id(app, lane, seg) == "E_L3_S2":
                     continue
                 total += traci.lanearea.getLastStepVehicleNumber(det_id(app, lane, seg))
-        
         return total
 
     if app == "S":
@@ -84,145 +75,374 @@ def arm_sum(app):
 
     return total
 
-def get_state_arm_level():
-    return tuple(arm_sum(app) for app in APPROACHES)
+def get_main():
+    w = arm_main("W")
+    e = arm_main("E")
+    n = arm_main("N")
+    s = arm_main("S")
+    phase = traci.trafficlight.getPhase(TLS_MAIN)
+    return (w, e, n, s, phase)
 
-# -------------------------
-# Crazy behavior functions
-# -------------------------
-def make_some_vehicles_behave_weird(step):
-    veh_ids = traci.vehicle.getIDList()
+def total_main(state):
+    return state[0] + state[1] + state[2] + state[3]
 
-    for vid in veh_ids:
-        if traci.vehicle.getTypeID(vid) != "crazyDriver":
-            continue
+# ---------------------------
+# DETECTORS (AB)
+# ---------------------------
+def det_ab(app, lane, seg):
+    return f"AB_{app}_L{lane}_S{seg}"
 
-        if vid not in VEH_BEHAVIOR:
-            VEH_BEHAVIOR[vid] = random.choice(BEHAVIORS)
+def arm_ab(app):
+    total = 0
 
-        behavior = VEH_BEHAVIOR[vid]
-        traci.vehicle.setColor(vid, BEHAVIOR_COLORS[behavior])
-        apply_abnormal_behavior(vid, step, behavior)
-
-def apply_abnormal_behavior(veh_id, step, behavior):
-    if behavior == "slowdown":
-        abnormal_slowdown(veh_id, step)
-    elif behavior == "stop_near_junction":
-        abnormal_stop_near_junction(veh_id, step)
-    elif behavior == "lane_change":
-        abnormal_lane_change(veh_id, step)
-
-def help_normal_cars_overtake():
-    veh_ids = traci.vehicle.getIDList()
-
-    for vid in veh_ids:
-        if traci.vehicle.getTypeID(vid) == "crazyDriver":
-            continue
-
-        speed = traci.vehicle.getSpeed(vid)
-
-        if speed < STOP_SPEED_EPS:
-            STUCK_STEPS[vid] = STUCK_STEPS.get(vid, 0) + 1
-        else:
-            STUCK_STEPS[vid] = 0
-            continue
-
-        if STUCK_STEPS[vid] < STUCK_MIN_STEPS:
-            continue
-
-        leader = traci.vehicle.getLeader(vid, LEADER_LOOKAHEAD)
-        if not leader:
-            continue
-
-        leader_id, gap = leader
-
-        if traci.vehicle.getTypeID(leader_id) != "crazyDriver":
-            continue
-        if gap > BLOCK_GAP_MAX:
-            continue
-        if traci.vehicle.getSpeed(leader_id) > STOP_SPEED_EPS:
-            continue
-
-        edge_id = traci.vehicle.getRoadID(vid)
-        if edge_id == "" or edge_id[0] == ":":
-            continue
-
-        lane_count = traci.edge.getLaneNumber(edge_id)
-        if lane_count <= 1:
-            continue
-
-        cur_lane = traci.vehicle.getLaneIndex(vid)
-        for target_lane in [cur_lane + 1, cur_lane - 1]:
-            if 0 <= target_lane < lane_count:
+    if app == "W":
+        for lane in range(3):
+            for seg in range(3):
+                if det_ab(app, lane, seg) == "AB_W_L2_S2":
+                    continue
                 try:
-                    traci.vehicle.changeLane(vid, target_lane, 5.0)
-                    STUCK_STEPS[vid] = 0
-                    break
-                except traci.TraCIException:
+                    total += traci.lanearea.getLastStepVehicleNumber(det_ab(app, lane, seg))
+                except:
                     pass
 
-def abnormal_slowdown(veh_id, step):
-    if step % 50 != 0:
-        return
-    if random.random() < 0.4:
-        current_speed = traci.vehicle.getSpeed(veh_id)
-        new_speed = max(0.0, current_speed * 0.3)
-        traci.vehicle.slowDown(veh_id, new_speed, 5.0)
+    if app == "E":
+        for lane in range(2):
+            for seg in range(2):
+                try:
+                    total += traci.lanearea.getLastStepVehicleNumber(det_ab(app, lane, seg))
+                except:
+                    pass
 
-def abnormal_stop_near_junction(veh_id, step):
-    lane_id = traci.vehicle.getLaneID(veh_id)
-    if lane_id == "":
-        return
+    if app == "S":
+        for lane in range(2):
+            for seg in range(3):
+                try:
+                    total += traci.lanearea.getLastStepVehicleNumber(det_ab(app, lane, seg))
+                except:
+                    pass
 
-    pos = traci.vehicle.getLanePosition(veh_id)
-    lane_length = traci.lane.getLength(lane_id)
+    return total
 
-    if lane_length - pos < 10:
-        if random.random() < 0.5:
-            traci.vehicle.slowDown(veh_id, 0.0, 3.0)
+def get_ab():
+    return (
+        arm_ab("W"),
+        arm_ab("E"),
+        arm_ab("S"),
+        traci.trafficlight.getPhase(TLS_AB),
+    )
 
-def abnormal_lane_change(veh_id, step):
-    if step % 20 != 0:
-        return
+def total_ab(state):
+    return state[0] + state[1] + state[2]
 
-    edge_id = traci.vehicle.getRoadID(veh_id)
-    if edge_id == "" or edge_id[0] == ":":
-        return
+# ---------------------------
+# SUMO
+# ---------------------------
+def start():
+    traci.start([
+        SUMO_BINARY,
+        "-c", SUMO_CONFIG,
+        "--step-length", str(STEP_LENGTH),
+        "--start"
+    ])
 
-    lane_count = traci.edge.getLaneNumber(edge_id)
-    if lane_count <= 1:
-        return
+def stop():
+    return traci.simulation.getMinExpectedNumber() <= 0
 
-    current_lane_index = traci.vehicle.getLaneIndex(veh_id)
-    target_lane = current_lane_index + random.choice([-1, 1])
+# ---------------------------
+# STATIC RUN
+# ---------------------------
+def run_static():
+    start()
 
-    if 0 <= target_lane < lane_count:
-        traci.vehicle.changeLane(veh_id, target_lane, 5.0)
+    t, qm, qa, qt = [], [], [], []
+    dm, da, dt = [], [], []
 
-# -------------------------
-# Main
-# -------------------------
-def run():
-    step = 0
-    print("Running simulation: crazy behaviors + detector state...\n")
+    cdm = 0.0
+    cda = 0.0
+    cdt = 0.0
 
-    while traci.simulation.getMinExpectedNumber() > 0:
+    while not stop():
         traci.simulationStep()
-        step += 1
 
-        # 1) apply crazy behaviors
-        make_some_vehicles_behave_weird(step)
+        s1 = get_main()
+        s2 = get_ab()
 
-        # 2) help normal cars bypass
-        help_normal_cars_overtake()
+        q1 = total_main(s1)
+        q2 = total_ab(s2)
+        q = q1 + q2
 
-        # 3) read detectors (print every 10 steps to reduce spam)
-        if step % 10 == 0:
-            t = traci.simulation.getTime()
-            print(f"t={t:.1f}  state={get_state_arm_level()}")
+        cdm += q1 * STEP_LENGTH
+        cda += q2 * STEP_LENGTH
+        cdt += q * STEP_LENGTH
+
+        t.append(traci.simulation.getTime())
+        qm.append(q1)
+        qa.append(q2)
+        qt.append(q)
+
+        dm.append(cdm)
+        da.append(cda)
+        dt.append(cdt)
 
     traci.close()
 
+    return (
+        np.array(t),
+        np.array(qm),
+        np.array(qa),
+        np.array(qt),
+        np.array(dm),
+        np.array(da),
+        np.array(dt),
+    )
+
+# ---------------------------
+# AC RUN (2 separated agents)
+# ---------------------------
+class IntersectionAgent:
+    def __init__(self, name, tls_id, phases, min_green=20.0, epsilon=0.05, temp=1.0):
+        self.name = name
+        self.tls_id = tls_id
+        self.phases = phases
+        self.min_green = min_green
+        self.epsilon = epsilon
+        self.temp = temp
+
+        self.prefs = {}
+        self.V = {}
+        self.last_switch = -min_green  # allow immediate action at t=0
+
+    def ensure_state(self, state):
+        if state not in self.prefs:
+            self.prefs[state] = np.zeros(len(self.phases), dtype=float)
+        if state not in self.V:
+            self.V[state] = 0.0
+
+    def softmax(self, x):
+        x = np.array(x, dtype=float) / max(1e-9, self.temp)
+        e = np.exp(x - np.max(x))
+        p = e / np.sum(e)
+        p = 0.05 + 0.95 * p
+        return p / np.sum(p)
+
+    def choose_action(self, state, current_time):
+        self.ensure_state(state)
+        pi = self.softmax(self.prefs[state])
+
+        if current_time - self.last_switch >= self.min_green:
+            if np.random.rand() < self.epsilon:
+                action = np.random.choice(self.phases)
+            else:
+                idx = np.random.choice(len(self.phases), p=pi)
+                action = self.phases[idx]
+
+            traci.trafficlight.setPhase(self.tls_id, int(action))
+            self.last_switch = current_time
+        else:
+            action = traci.trafficlight.getPhase(self.tls_id)
+
+        return int(action), pi
+
+    def update(self, state, next_state, action, pi, reward, gamma, actor_lr, critic_lr):
+        self.ensure_state(state)
+        self.ensure_state(next_state)
+
+        td_error = reward + gamma * self.V[next_state] - self.V[state]
+
+        self.V[state] += critic_lr * td_error
+
+        for k in range(len(self.phases)):
+            phase_k = self.phases[k]
+            if phase_k == action:
+                self.prefs[state][k] += actor_lr * td_error * (1.0 - pi[k])
+            else:
+                self.prefs[state][k] -= actor_lr * td_error * pi[k]
+
+        self.prefs[state] = np.clip(self.prefs[state], -3.0, 3.0)
+        return td_error
+
+    def export_model(self):
+        return {
+            "prefs": self.prefs,
+            "V": self.V,
+        }
+
+    def load_model(self, data):
+        self.prefs = data.get("prefs", {})
+        self.V = data.get("V", {})
+        self.last_switch = -self.min_green
+
+def save_agents(model_path, main_agent, ab_agent):
+    data = {
+        "main_agent": main_agent.export_model(),
+        "ab_agent": ab_agent.export_model(),
+    }
+    with open(model_path, "wb") as f:
+        pickle.dump(data, f)
+
+def load_agents(model_path, main_agent, ab_agent):
+    if not os.path.exists(model_path):
+        print("Starting fresh model")
+        return
+
+    with open(model_path, "rb") as f:
+        data = pickle.load(f)
+
+    if "main_agent" in data:
+        main_agent.load_model(data["main_agent"])
+    if "ab_agent" in data:
+        ab_agent.load_model(data["ab_agent"])
+
+    print("Loaded existing model")
+
+def run_ac_separated(train=True):
+    main_agent = IntersectionAgent(
+        name="MAIN",
+        tls_id=TLS_MAIN,
+        phases=[0, 2, 4, 6],
+        min_green=MIN_GREEN,
+        epsilon=AC_EPSILON if train else 0.0,
+        temp=AC_TEMPERATURE,
+    )
+
+    ab_agent = IntersectionAgent(
+        name="AB",
+        tls_id=TLS_AB,
+        phases=[0, 2, 4],
+        min_green=MIN_GREEN,
+        epsilon=AC_EPSILON if train else 0.0,
+        temp=AC_TEMPERATURE,
+    )
+
+    start()
+    load_agents(MODEL_PATH, main_agent, ab_agent)
+
+    # force fresh episode timing every run
+    main_agent.last_switch = -main_agent.min_green
+    ab_agent.last_switch = -ab_agent.min_green
+
+    t, qm, qa, qt = [], [], [], []
+    dm, da, dt = [], [], []
+
+    cdm = 0.0
+    cda = 0.0
+    cdt = 0.0
+
+    while not stop():
+        current_time = traci.simulation.getTime()
+
+        s_main = get_main()
+        s_ab = get_ab()
+
+        a_main, pi_main = main_agent.choose_action(s_main, current_time)
+        a_ab, pi_ab = ab_agent.choose_action(s_ab, current_time)
+
+        traci.simulationStep()
+
+        s_main_next = get_main()
+        s_ab_next = get_ab()
+
+        q_main = total_main(s_main_next)
+        q_ab = total_ab(s_ab_next)
+
+        # separated rewards
+        r_main = -q_main
+        r_ab = -q_ab
+
+        if train:
+            main_agent.update(
+                state=s_main,
+                next_state=s_main_next,
+                action=a_main,
+                pi=pi_main,
+                reward=r_main,
+                gamma=GAMMA,
+                actor_lr=ACTOR_LR,
+                critic_lr=CRITIC_LR,
+            )
+
+            ab_agent.update(
+                state=s_ab,
+                next_state=s_ab_next,
+                action=a_ab,
+                pi=pi_ab,
+                reward=r_ab,
+                gamma=GAMMA,
+                actor_lr=ACTOR_LR,
+                critic_lr=CRITIC_LR,
+            )
+
+        q_total = q_main + q_ab
+
+        cdm += q_main * STEP_LENGTH
+        cda += q_ab * STEP_LENGTH
+        cdt += q_total * STEP_LENGTH
+
+        t.append(current_time)
+        qm.append(q_main)
+        qa.append(q_ab)
+        qt.append(q_total)
+
+        dm.append(cdm)
+        da.append(cda)
+        dt.append(cdt)
+
+    traci.close()
+
+    if train:
+        save_agents(MODEL_PATH, main_agent, ab_agent)
+        print("Separated model saved")
+
+    return (
+        np.array(t),
+        np.array(qm),
+        np.array(qa),
+        np.array(qt),
+        np.array(dm),
+        np.array(da),
+        np.array(dt),
+    )
+
+# ---------------------------
+# MAIN
+# ---------------------------
+def main():
+    os.makedirs(OUT_DIR, exist_ok=True)
+
+    runs = 2
+
+    for i in range(runs):
+        print(f"\n=== Run {i+1} ===")
+
+        # training run
+        t_a, qm_a, qa_a, qt_a, dm_a, da_a, dt_a = run_ac_separated(train=False)
+
+        fig, axs = plt.subplots(1, 2, figsize=(12, 5))
+
+        axs[0].plot(t_a, qa_a, label="AC")
+        avg_ab = np.mean(qa_a)
+        axs[0].axhline(avg_ab, linestyle="--", label=f"Avg = {avg_ab:.1f}")
+        axs[0].set_title(f"AB Intersection (Run {i+103})")
+        axs[0].set_xlabel("Time (s)")
+        axs[0].set_ylabel("Queue")
+        axs[0].legend()
+        axs[0].grid()
+
+        axs[1].plot(t_a, qm_a, label="AC")
+        avg_main = np.mean(qm_a)
+        axs[1].axhline(avg_main, linestyle="--", label=f"Avg = {avg_main:.1f}")
+        axs[1].set_title(f"Assaf Intersection (Run {i+1})")
+        axs[1].set_xlabel("Time (s)")
+        axs[1].set_ylabel("Queue")
+        axs[1].legend()
+        axs[1].grid()
+
+        plt.tight_layout()
+        filename = f"exp_separated/ex{i+103}.png"
+        plt.savefig(filename, dpi=300)
+        print(f"Saved: {filename}")
+
+        plt.close(fig)
+
 if __name__ == "__main__":
-    traci.start(SUMO_CMD)
-    run()
+    main()

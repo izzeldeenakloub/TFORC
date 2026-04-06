@@ -1,19 +1,19 @@
-# 🚦 SUMO Traffic Simulation – Progress Documentation
+#  SUMO Traffic Simulation – Progress Documentation
 
-## 📌 Project Progress (Work Done So Far)
+## Project Progress (Work Done So Far)
 
 This document summarizes the steps completed so far in building the SUMO traffic simulation environment.  
 The project is still in progress, and this README reflects what has been completed up to this stage.
 
 ---
 
-## 🗺️ 1. Downloaded Map from OpenStreetMap
+##  1. Downloaded Map from OpenStreetMap
 - Selected the target geographic area.
 - Downloaded the map in **.osm** format for use as the base network.
 
 ---
 
-## 🧹 2. Cleaned the Map Using JOSM
+##  2. Cleaned the Map Using JOSM
 - Opened the `.osm` file using **JOSM**.
 - Removed unnecessary map elements such as:
   - Buildings  
@@ -23,14 +23,14 @@ The project is still in progress, and this README reflects what has been complet
 
 ---
 
-## 🛠️ 3. Generated the Network (`khalda.net.xml`)
+##  3. Generated the Network (`khalda.net.xml`)
 - Used **netgenerate / netconvert** to convert the cleaned `.osm` map into a SUMO network.
 - Output file:  
   **`khalda.net.xml`**
 
 ---
 
-## 🧭 4. Edited the Network in Netedit
+##  4. Edited the Network in Netedit
 - Loaded `khalda.net.xml` in **Netedit**.
 - Added an **induction loop detector (E2 sensor)** to one of the traffic lights.
 - Adjusted and verified network structure and connections.
@@ -39,7 +39,7 @@ The project is still in progress, and this README reflects what has been complet
 
 ---
 
-## 🚗 5. Generated Random Trips
+##  5. Generated Random Trips
 - Used SUMO’s **randomTrips.py** tool to generate synthetic vehicle trips based on the network.
 - Generated files:
   - **`khalda.trips.xml`** — raw trip definitions  
@@ -47,7 +47,7 @@ The project is still in progress, and this README reflects what has been complet
 
 ---
 
-## ⚙️ 6. Created the SUMO Configuration File (`khalda.sumocfg`)
+##  6. Created the SUMO Configuration File (`khalda.sumocfg`)
 - Created a SUMO configuration file that links all necessary components:
   - Network → `khalda.net.xml`
   - Routes → `routes.rou.xml`
@@ -56,7 +56,7 @@ The project is still in progress, and this README reflects what has been complet
 
 ---
 
-## 🧩 7. Created the Main Python File (`main.py`)
+##  7. Created the Main Python File (`main.py`)
 A new Python file, **`main.py`**, was created to serve as the foundation for upcoming ML-based traffic control logic.
 
 This file will:
@@ -69,7 +69,7 @@ This step establishes the starting point for the intelligent control phase of th
 
 ---
 
-## 📌 Current Status
+##  Current Status
 The simulation environment is fully prepared:
 - Real-world map cleaned and converted  
 - Traffic network created and edited  
@@ -85,7 +85,7 @@ The project is now ready for:
 
 ---
 
-## 📁 Project Files Created So Far
+##  Project Files Created So Far
 
 khalda.net.xml
 khalda.add.xml

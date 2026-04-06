@@ -1,0 +1,21 @@
+***Starting server on port 34223 ***
+Loading net-file from 'khalda.net.xml' ... done (286ms).
+Loading additional-files from 'khalda.add.xml' ... done (23ms).
+Loading route-files incrementally from '../data/demand/demand_evening.rou.xml'
+Loading route-files incrementally from '../data/demand/demand_midday.rou.xml'
+Loading route-files incrementally from '../data/demand/demand_morning.rou.xml'
+Loading route-files incrementally from 'routes.rou.xml'
+Loading done.
+Simulation started with time: 0.00.
+Error: tcpip::Socket::recvAndCheck @ recv: peer shutdown
+Quitting (on error).
+Simulation ended at time: 0.00.
+Performance:
+ Duration: 12.27s
+ TraCI-Duration: 0.00s
+ Real time factor: 0
+ UPS: 0.000000
+Vehicles:
+ Inserted: 0 (Loaded: 2)
+ Running: 0
+ Waiting: 0
