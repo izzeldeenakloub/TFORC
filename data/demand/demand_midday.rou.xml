@@ -1,32 +1,34 @@
 <routes>
-  <flow id="midday_1" type="normalDriver" begin="7200" end="18000" vehsPerHour="50" from="westFeed1" to="sink2" via="W_in" departLane="best" departSpeed="max"/>
-  <flow id="midday_2" type="normalDriver" begin="7200" end="18000" vehsPerHour="50" from="eastFeed1" to="sink1" via="E_in" departLane="best" departSpeed="max"/>
-  <flow id="midday_3" type="normalDriver" begin="7200" end="18000" vehsPerHour="50" from="eastFeed2" to="sink1" via="E_in" departLane="best" departSpeed="max"/>
-  <flow id="midday_4" type="normalDriver" begin="7200" end="18000" vehsPerHour="50" from="eastFeed1" to="sink1" via="E_in" departLane="best" departSpeed="max"/>
-  <flow id="midday_5" type="normalDriver" begin="7200" end="18000" vehsPerHour="50" from="eastFeed3" to="sink2" via="E_in" departLane="best" departSpeed="max"/>
-  <flow id="midday_6" type="normalDriver" begin="7200" end="18000" vehsPerHour="50" from="southFeed2" to="sink1" via="S_in" departLane="best" departSpeed="max"/>
-  <flow id="midday_7" type="normalDriver" begin="7200" end="18000" vehsPerHour="50" from="northFeed2" to="sink2" via="N_in" departLane="best" departSpeed="max"/>
-  <flow id="midday_8" type="normalDriver" begin="7200" end="18000" vehsPerHour="50" from="eastFeed2" to="sink1" via="E_in" departLane="best" departSpeed="max"/>
-  <flow id="midday_9" type="normalDriver" begin="7200" end="18000" vehsPerHour="50" from="westFeed3" to="sink2" via="W_in" departLane="best" departSpeed="max"/>
-  <flow id="midday_10" type="normalDriver" begin="7200" end="18000" vehsPerHour="50" from="eastFeed2" to="sink2" via="E_in" departLane="best" departSpeed="max"/>
-  <flow id="midday_11" type="normalDriver" begin="7200" end="18000" vehsPerHour="50" from="southFeed1" to="sink1" via="S_in" departLane="best" departSpeed="max"/>
-  <flow id="midday_12" type="normalDriver" begin="7200" end="18000" vehsPerHour="50" from="eastFeed1" to="sink2" via="E_in" departLane="best" departSpeed="max"/>
-  <flow id="midday_13" type="normalDriver" begin="7200" end="18000" vehsPerHour="50" from="westFeed1" to="sink2" via="W_in" departLane="best" departSpeed="max"/>
-  <flow id="midday_14" type="normalDriver" begin="7200" end="18000" vehsPerHour="50" from="eastFeed3" to="sink2" via="E_in" departLane="best" departSpeed="max"/>
-  <flow id="midday_15" type="normalDriver" begin="7200" end="18000" vehsPerHour="50" from="westFeed4" to="sink1" via="W_in" departLane="best" departSpeed="max"/>
-  <flow id="midday_16" type="normalDriver" begin="7200" end="18000" vehsPerHour="50" from="AB_W_feed_2" to="sink1" via="AB_W_in" departLane="best" departSpeed="max"/>
-  <flow id="midday_17" type="normalDriver" begin="7200" end="18000" vehsPerHour="50" from="AB_E_feed_3" to="sink1" via="AB_E_in" departLane="best" departSpeed="max"/>
-  <flow id="midday_18" type="normalDriver" begin="7200" end="18000" vehsPerHour="50" from="AB_E_feed_3" to="sink1" via="AB_E_in" departLane="best" departSpeed="max"/>
-  <flow id="midday_19" type="normalDriver" begin="7200" end="18000" vehsPerHour="50" from="AB_W_feed_3" to="sink2" via="AB_W_in" departLane="best" departSpeed="max"/>
-  <flow id="midday_20" type="normalDriver" begin="7200" end="18000" vehsPerHour="50" from="AB_S_feed_1" to="sink2" via="AB_S_in" departLane="best" departSpeed="max"/>
-  <flow id="midday_21" type="normalDriver" begin="7200" end="18000" vehsPerHour="50" from="AB_E_feed_1" to="sink1" via="AB_E_in" departLane="best" departSpeed="max"/>
-  <flow id="midday_22" type="normalDriver" begin="7200" end="18000" vehsPerHour="50" from="AB_E_feed_3" to="sink1" via="AB_E_in" departLane="best" departSpeed="max"/>
-  <flow id="midday_23" type="normalDriver" begin="7200" end="18000" vehsPerHour="50" from="AB_W_feed_3" to="sink2" via="AB_W_in" departLane="best" departSpeed="max"/>
-  <flow id="midday_24" type="normalDriver" begin="7200" end="18000" vehsPerHour="50" from="AB_E_feed_2" to="sink1" via="AB_E_in" departLane="best" departSpeed="max"/>
-  <flow id="midday_25" type="normalDriver" begin="7200" end="18000" vehsPerHour="50" from="AB_W_feed_3" to="sink2" via="AB_W_in" departLane="best" departSpeed="max"/>
-  <flow id="midday_26" type="normalDriver" begin="7200" end="18000" vehsPerHour="50" from="AB_E_feed_3" to="sink1" via="AB_E_in" departLane="best" departSpeed="max"/>
-  <flow id="midday_27" type="normalDriver" begin="7200" end="18000" vehsPerHour="50" from="AB_E_feed_3" to="sink1" via="AB_E_in" departLane="best" departSpeed="max"/>
-  <flow id="midday_28" type="normalDriver" begin="7200" end="18000" vehsPerHour="50" from="AB_S_feed_1" to="sink1" via="AB_S_in" departLane="best" departSpeed="max"/>
-  <flow id="midday_29" type="normalDriver" begin="7200" end="18000" vehsPerHour="50" from="AB_E_feed_2" to="sink1" via="AB_E_in" departLane="best" departSpeed="max"/>
-  <flow id="midday_30" type="normalDriver" begin="7200" end="18000" vehsPerHour="50" from="AB_W_feed_3" to="sink2" via="AB_W_in" departLane="best" departSpeed="max"/>
+<!-- WEST flow for both arab-bank and assaf intersections -->
+
+  <flow id="midday_1" type="normalDriver" begin="0" end="7200" vehsPerHour="210" from="west_feed_1" to="sink1" via="W_in" departLane="best" departSpeed="max"/>
+  <flow id="midday_2" type="normalDriver" begin="0" end="7200" vehsPerHour="84" from="west_feed_1" to="sink2" via="AB_W_in" departLane="best" departSpeed="max"/>
+  <flow id="midday_3" type="normalDriver" begin="0" end="7200" vehsPerHour="210" from="west_feed_1" to="sink1" via="W_in" departLane="best" departSpeed="max"/>
+  <flow id="midday_4" type="normalDriver" begin="0" end="7200" vehsPerHour="84" from="west_feed_1" to="sink2" via="W_in AB_W_in" departLane="best" departSpeed="max"/>
+  <flow id="midday_9" type="normalDriver" begin="0" end="7200" vehsPerHour="84" from="west_feed_1" to="sink3_1" via="W_in" departLane="best" departSpeed="max"/>
+  <flow id="midday_10" type="normalDriver" begin="0" end="7200" vehsPerHour="84" from="west_feed_1" to="sink4_1" via="W_in_2" departLane="best" departSpeed="max"/>
+ 
+  <!-- EAST flow for both arab-bank and assaf intersections -->
+
+  <flow id="midday_5" type="normalDriver" begin="0" end="7200" vehsPerHour="210" from="east_feed" to="sink2" via="E_in AB_E_in" departLane="best" departSpeed="max"/>
+  <flow id="midday_6" type="normalDriver" begin="0" end="7200" vehsPerHour="84" from="east_feed" to="sink1" via="E_in" departLane="best" departSpeed="max"/>
+  <flow id="midday_7" type="normalDriver" begin="0" end="7200" vehsPerHour="210" from="east_feed" to="sink2" via="E_in" departLane="best" departSpeed="max"/>
+  <flow id="midday_8" type="normalDriver" begin="0" end="7200" vehsPerHour="140" from="east_feed" to="sink1" via="E_in AB_E_in" departLane="best" departSpeed="max"/>
+  <flow id="midday_11" type="normalDriver" begin="0" end="7200" vehsPerHour="84" from="east_feed" to="sink3_1" via="E_in_2" departLane="best" departSpeed="max"/>
+  <flow id="midday_12" type="normalDriver" begin="0" end="7200" vehsPerHour="84" from="east_feed" to="sink4_1" via="E_in" departLane="best" departSpeed="max"/>
+
+  <!-- NORTH flow for assaf intersection -->
+
+  <flow id="midday_13" type="normalDriver" begin="0" end="7200" vehsPerHour="140" from="north_feed" to="sink4_1" via="N_in" departLane="best" departSpeed="max"/>
+  <flow id="midday_14" type="normalDriver" begin="0" end="7200" vehsPerHour="140" from="north_feed" to="sink1" via="N_in" departLane="best" departSpeed="max"/>
+  <flow id="midday_15" type="normalDriver" begin="0" end="7200" vehsPerHour="140" from="north_feed" to="sink2" via="N_in_2" departLane="best" departSpeed="max"/>
+
+  <!-- SOUTH flow for both arab-bank and assaf intersections -->
+
+  <flow id="midday_16" type="normalDriver" begin="0" end="7200" vehsPerHour="140" from="south_feed" to="sink2" via="S_in" departLane="best" departSpeed="max"/>
+  <flow id="midday_17" type="normalDriver" begin="0" end="7200" vehsPerHour="140" from="south_feed" to="sink3_1" via="S_in" departLane="best" departSpeed="max"/>
+  <flow id="midday_18" type="normalDriver" begin="0" end="7200" vehsPerHour="140" from="south_feed" to="sink1" via="S_in_2" departLane="best" departSpeed="max"/>
+
+  <flow id="midday_19" type="normalDriver" begin="0" end="7200" vehsPerHour="140" from="AB_feed_s_1" to="sink1" via="AB_S_in_2" departLane="best" departSpeed="max"/>
+  <flow id="midday_20" type="normalDriver" begin="0" end="7200" vehsPerHour="210" from="AB_feed_s_1" to="sink2" via="AB_S_in" departLane="best" departSpeed="max"/>
 </routes>
