@@ -15,7 +15,7 @@ import traci
 # ---------------------------
 # CONFIG
 # ---------------------------
-SUMO_BINARY = "sumo-gui"
+SUMO_BINARY = "sumo"
 SUMO_CONFIG = "../network/khalda.sumocfg"
 STEP_LENGTH = 1.0
 
@@ -438,9 +438,9 @@ def run_ac_separated(train=True):
 # ==========================================================
 def main():
 
-    os.makedirs("exp_separated_HD", exist_ok=True)
+    # os.makedirs("exp_separated_HD", exist_ok=True)
 
-    runs = 100
+    runs = 200
 
     for i in range(runs):
 
@@ -463,7 +463,7 @@ def main():
         # ===============================================
         # RUN STATIC
         # ===============================================
-        t_s, qm_s, qa_s, qt_s, dm_s, da_s, dt_s = run_static()
+        # t_s, qm_s, qa_s, qt_s, dm_s, da_s, dt_s = run_static()
 
         # ===============================================
         # SUM OF ARMS
@@ -480,16 +480,16 @@ def main():
         # AB INTERSECTION
         # ------------------------------------------------
         axs[0].plot(t_a, ab_sum, label="AC")
-        axs[0].plot(t_s, qa_s, label="Static")
+        # axs[0].plot(t_s, qa_s, label="Static")
 
         avg_ac_ab = np.mean(ab_sum)
-        avg_st_ab = np.mean(qa_s)
+        # avg_st_ab = np.mean(qa_s)
 
         axs[0].axhline(avg_ac_ab, linestyle='--',
                        label=f"AC Avg = {avg_ac_ab:.1f}")
 
-        axs[0].axhline(avg_st_ab, linestyle='--',
-                       label=f"Static Avg = {avg_st_ab:.1f}")
+        # axs[0].axhline(avg_st_ab, linestyle='--',
+                    #    label=f"Static Avg = {avg_st_ab:.1f}")
 
         axs[0].set_title("AB Intersection")
         axs[0].set_xlabel("Time (s)")
@@ -501,16 +501,16 @@ def main():
         # MAIN INTERSECTION
         # ------------------------------------------------
         axs[1].plot(t_a, main_sum, label="AC")
-        axs[1].plot(t_s, qm_s, label="Static")
+        # axs[1].plot(t_s, qm_s, label="Static")
 
         avg_ac_main = np.mean(main_sum)
-        avg_st_main = np.mean(qm_s)
+        # avg_st_main = np.mean(qm_s)
 
         axs[1].axhline(avg_ac_main, linestyle='--',
                        label=f"AC Avg = {avg_ac_main:.1f}")
 
-        axs[1].axhline(avg_st_main, linestyle='--',
-                       label=f"Static Avg = {avg_st_main:.1f}")
+        # axs[1].axhline(avg_st_main, linestyle='--',
+                    #    label=f"Static Avg = {avg_st_main:.1f}")
 
         axs[1].set_title("Assaf Intersection")
         axs[1].set_xlabel("Time (s)")
@@ -521,7 +521,7 @@ def main():
         plt.tight_layout()
 
         plt.savefig(
-            f"exp_separated_HD/sum_compare_run_{i+1}.png",
+            f"exp_separated_v2/separated_v2_{i+1}.png",
             dpi=300
         )
 

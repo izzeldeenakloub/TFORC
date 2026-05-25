@@ -310,7 +310,7 @@ def load_model(path, main_agent, ab_agent):
 # =========================================================
 def run_ac_connected():
 
-    MODEL_PATH = "ac_connected.pkl"
+    MODEL_PATH = "ac_connected_shared_state_action.pkl"
 
     main_agent = IntersectionAgent("MAIN", TLS_MAIN, [0,2,4,6])
     ab_agent   = IntersectionAgent("AB",   TLS_AB,   [0,2,4])
@@ -490,88 +490,94 @@ def run_ac_connected():
 
 def main():
 
-    runs = 5
-    os.makedirs("exp_main_ab", exist_ok=True)
+    runs = 100
 
     for i in range(runs):
 
-        print(f"Run {i+1}")
+        print(f"=== Run {i+1} ===")
 
+        # ===============================================
+        # RUN AC
+        # ===============================================
         (
-            t,
-            qm, qa, qt,
+            t_a,
+            qm_a, qa_a, qt_a,
+
             mw, me, mn, ms,
             aw, ae, ass,
-            dm, da, dt
+
+            dm_a, da_a, dt_a
+
         ) = run_ac_connected()
 
-        # ==================================================
-        # FIGURE 1 : MAIN INTERSECTION (4 ARMS)
-        # ==================================================
-        fig1, axs1 = plt.subplots(
-            2, 2,
-            figsize=(14,10),
-            sharex=True,
-            sharey=True
+        # ===============================================
+        # RUN STATIC
+        # ===============================================
+        # t_s, qm_s, qa_s, qt_s, dm_s, da_s, dt_s = run_static()
+
+        # ===============================================
+        # SUM OF ARMS
+        # ===============================================
+        main_sum = mw + me + mn + ms
+        ab_sum   = aw + ae + ass
+
+        # ===============================================
+        # FIGURE LIKE YOUR IMAGE
+        # ===============================================
+        fig, axs = plt.subplots(1, 2, figsize=(14, 6))
+
+        # ------------------------------------------------
+        # AB INTERSECTION
+        # ------------------------------------------------
+        axs[0].plot(t_a, ab_sum, label="AC")
+        # axs[0].plot(t_s, qa_s, label="Static")
+
+        avg_ac_ab = np.mean(ab_sum)
+        # avg_st_ab = np.mean(qa_s)
+
+        axs[0].axhline(avg_ac_ab, linestyle='--',
+                       label=f"AC Avg = {avg_ac_ab:.1f}")
+
+        # axs[0].axhline(avg_st_ab, linestyle='--',
+                    #    label=f"Static Avg = {avg_st_ab:.1f}")
+
+        axs[0].set_title("AB Intersection")
+        axs[0].set_xlabel("Time (s)")
+        axs[0].set_ylabel("Queue")
+        axs[0].grid()
+        axs[0].legend()
+
+        # ------------------------------------------------
+        # MAIN INTERSECTION
+        # ------------------------------------------------
+        axs[1].plot(t_a, main_sum, label="AC")
+        # axs[1].plot(t_s, qm_s, label="Static")
+
+        avg_ac_main = np.mean(main_sum)
+        # avg_st_main = np.mean(qm_s)
+
+        axs[1].axhline(avg_ac_main, linestyle='--',
+                       label=f"AC Avg = {avg_ac_main:.1f}")
+
+        # axs[1].axhline(avg_st_main, linestyle='--',
+                    #    label=f"Static Avg = {avg_st_main:.1f}")
+
+        axs[1].set_title("Assaf Intersection")
+        axs[1].set_xlabel("Time (s)")
+        axs[1].set_ylabel("Queue")
+        axs[1].grid()
+        axs[1].legend()
+
+        plt.tight_layout()
+
+        plt.savefig(
+            f"exp_shared_state_action_v2/shared_state_action_v2_{i+1}.png",
+            dpi=300
         )
 
-        axs1 = axs1.flatten()
+        plt.close()
 
-        main_data  = [mw, me, mn, ms]
-        main_names = ["West", "East", "North", "South"]
-
-        for k in range(4):
-
-            y = main_data[k]
-            avg = np.mean(y)
-
-            axs1[k].plot(t, y, label="AC")
-            axs1[k].axhline(avg, linestyle='--', label=f"Avg = {avg:.1f}")
-
-            axs1[k].set_title(main_names[k])
-            axs1[k].set_xlabel("Time (s)")
-            axs1[k].set_ylabel("Queue")
-            axs1[k].grid(True)
-            axs1[k].legend()
-
-        fig1.suptitle(f"Main Intersection (Run {i+1})", fontsize=16)
-        plt.tight_layout()
-        plt.savefig(f"exp_main_ab/main_run_{i+1}.png", dpi=300)
-        plt.close(fig1)
-
-        # ==================================================
-        # FIGURE 2 : AB INTERSECTION (3 ARMS)
-        # ==================================================
-        fig2, axs2 = plt.subplots(
-            3, 1,
-            figsize=(12,12),
-            sharex=True,
-            sharey=True
-        )
-
-        ab_data  = [aw, ae, ass]
-        ab_names = ["West", "East", "South"]
-
-        for k in range(3):
-
-            y = ab_data[k]
-            avg = np.mean(y)
-
-            axs2[k].plot(t, y, label="AC")
-            axs2[k].axhline(avg, linestyle='--', label=f"Avg = {avg:.1f}")
-
-            axs2[k].set_title(ab_names[k])
-            axs2[k].set_xlabel("Time (s)")
-            axs2[k].set_ylabel("Queue")
-            axs2[k].grid(True)
-            axs2[k].legend()
-
-        fig2.suptitle(f"AB Intersection (Run {i+1})", fontsize=16)
-        plt.tight_layout()
-        plt.savefig(f"exp_main_ab/ab_run_{i+1}.png", dpi=300)
-        plt.close(fig2)
-
-        print("Saved both figures")
+        print("Saved")
 
 
 if __name__ == "__main__":

@@ -7,7 +7,7 @@
 
     <input>
         <net-file value="khalda.net.xml"/>
-        <route-files value="../data/demand/demand_morning.rou.xml,../data/demand/demand_midday.rou.xml,../data/demand/demand_evening.rou.xml"/>
+        <route-files value="../data/demand/demand_morning.rou.xml , ../data/demand/demand_midday.rou.xml , ../data/demand/demand_evening.rou.xml"/>
         <additional-files value="khalda.add.xml"/>
     </input>
 
@@ -16,7 +16,7 @@
     </output>
     <time>
         <begin value="0"/>
-        <end value="5000"/>
+        <end value=""/>
         <step-length value="1"/>
     </time>
 
